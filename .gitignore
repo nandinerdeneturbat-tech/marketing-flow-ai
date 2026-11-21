@@ -4,3 +4,6 @@ __pycache__/
 *.log
 uploads/*
 !uploads/.gitkeep
+marketing.db
+.venv/
+.env.*

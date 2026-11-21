@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="login-page">
+  <div class="login-card">
+    <div class="login-logo"><span>M</span></div>
+    <h1>Marketing Flow AI</h1>
+    <p>Маркетинг захиалга, төлөвлөгөөний систем</p>
+    <form method="post">
+      <label>И-мэйл хаяг</label>
+      <input type="text" name="email" placeholder="name@company.mn" required autofocus>
+      <label>Нууц үг</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+      <button type="submit" class="btn primary">Нэвтрэх</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page">
+  <div class="page-head"><div><p class="eyebrow">Хяналтын самбар</p><h1>Сайн байна уу, {{ session.name }}</h1></div></div>
+  {% if session.role == 'admin' %}
+  <div class="stats">
+    <div class="stat-card purple"><small>Нийт захиалга</small><strong>{{ data.total }}</strong><span>Бүх бүртгэл</span></div>
+    <div class="stat-card green"><small>Дууссан</small><strong>{{ data.done }}</strong><span>Амжилттай</span></div>
+    <div class="stat-card red"><small>Хугацаа хэтэрсэн</small><strong>{{ data.overdue }}</strong><span>Анхаарах хэрэгтэй</span></div>
+    <div class="stat-card blue"><small>Төлөвлөгөө</small><strong>{{ data.plan }}</strong><span>Импорт хийгдсэн</span></div>
+  </div>
+  <div class="grid-two">
+    <section class="panel"><h2>Төлвийн хуваарилалт</h2>
+      {% for status in statuses %}
+        {% set count = data.counts.get(status, 0) %}
+        <div class="bar-row"><span>{{ status }}</span><div class="bar"><i style="width:{{ (count / (data.total or 1) * 100)|round }}%"></i></div><b>{{ count }}</b></div>
+      {% endfor %}
+    </section>
+    <section class="panel"><h2>Салбарын захиалга</h2>
+      {% for row in data.branches %}
+      <div class="bar-row"><span>{{ row.label }}</span><div class="bar orange"><i style="width:{{ (row.count / (data.total or 1) * 100)|round }}%"></i></div><b>{{ row.count }}</b></div>
+      {% else %}<p class="empty">Захиалга хараахан алга</p>{% endfor %}
+    </section>
+  </div>
+  <section class="panel"><h2>Сүүлийн захиалгууд</h2>
+    <div class="table-wrap"><table><thead><tr><th>№</th><th>Захиалга</th><th>Захиалагч</th><th>Салбар</th><th>Хариуцагч</th><th>Төлөв</th><th>Deadline</th></tr></thead><tbody>
+    {% for row in data.recent %}<tr><td>#{{ row.id }}</td><td><strong>{{ row.title }}</strong></td><td>{{ row.customer_name or '-' }}</td><td>{{ row.branch or '-' }}</td><td>{{ row.assignee or '-' }}</td><td><span class="badge status-{{ row.status }}">{{ row.status }}</span></td><td>{{ row.deadline or '-' }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% else %}
+  <div class="stats">
+    <div class="stat-card purple"><small>Нийт захиалга</small><strong>{{ data.total }}</strong></div>
+    <div class="stat-card green"><small>Дууссан</small><strong>{{ data.done }}</strong></div>
+    <div class="stat-card blue"><small>Хийгдэж байна</small><strong>{{ data.active }}</strong></div>
+  </div>
+  <section class="panel"><h2>Миний захиалгууд</h2>
+    <div class="table-wrap"><table><thead><tr><th>№</th><th>Захиалга</th><th>Төрөл</th><th>Төлөв</th><th>Хариуцагч</th><th>Гүйцэтгэх хугацаа</th></tr></thead><tbody>
+    {% for row in data.recent %}<tr><td>#{{ row.id }}</td><td><strong>{{ row.title }}</strong></td><td>{{ row.work_type }}</td><td><span class="badge status-{{ row.status }}">{{ row.status }}</span></td><td>{{ row.assignee or 'Томилолт хүлээгдэж байна' }}</td><td>{{ row.deadline or '-' }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

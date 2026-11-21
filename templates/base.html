@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marketing Flow AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% if session.get('user_id') %}
+  <aside class="sidebar">
+    <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">M</span><span>Marketing Flow</span></a>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">⌂ <span>Дашбоард</span></a>
+      <a href="{{ url_for('orders') }}">☷ <span>Захиалга</span></a>
+      {% if session.role == 'admin' %}
+      <a href="{{ url_for('plans') }}">▦ <span>Сарын төлөвлөгөө</span></a>
+      <a href="{{ url_for('customers') }}">♙ <span>Захиалагчид</span></a>
+      <a href="{{ url_for('report_view') }}">▤ <span>Тайлан</span></a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-user">
+      <div class="avatar">{{ session.name[0]|upper }}</div>
+      <div><strong>{{ session.name }}</strong><small>{{ 'Админ' if session.role == 'admin' else 'Захиалагч' }}</small></div>
+      <a href="{{ url_for('logout') }}" title="Гарах">⏻</a>
+    </div>
+  </aside>
+  {% endif %}
+  <main class="{% if not session.get('user_id') %}full{% endif %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}<div class="toast {{ category }}">{{ message }}</div>{% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page">
+  <div class="page-head">
+    <div><p class="eyebrow">Ажлын удирдлага</p><h1>Захиалга</h1></div>
+    <button class="btn primary" onclick="document.getElementById('orderModal').showModal()">＋ Шинэ захиалга</button>
+  </div>
+  <form class="filters" method="get">
+    <input name="q" value="{{ request.args.get('q','') }}" placeholder="Захиалга хайх...">
+    {% if session.role == 'admin' %}
+    <select name="branch"><option value="">Бүх салбар</option>{% for b in branches %}<option value="{{ b.branch }}" {% if request.args.branch==b.branch %}selected{% endif %}>{{ b.branch }}</option>{% endfor %}</select>
+    <select name="work_type"><option value="">Бүх төрөл</option>{% for t in work_types %}<option value="{{ t }}" {% if request.args.work_type==t %}selected{% endif %}>{{ t }}</option>{% endfor %}</select>
+    <select name="assignee"><option value="">Бүх хариуцагч</option>{% for a in assignees %}<option value="{{ a.assignee }}" {% if request.args.assignee==a.assignee %}selected{% endif %}>{{ a.assignee }}</option>{% endfor %}</select>
+    {% endif %}
+    <select name="status"><option value="">Бүх төлөв</option>{% for s in statuses %}<option value="{{ s }}" {% if request.args.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+    <button class="btn">Шүүх</button>
+  </form>
+  <section class="panel">
+    <div class="table-wrap"><table>
+      <thead><tr><th>№</th><th>Захиалга</th><th>Төрөл</th><th>Салбар</th><th>Захиалагч</th><th>Төлөв</th><th>Хариуцагч</th><th>Deadline</th>{% if session.role=='admin' %}<th></th>{% endif %}</tr></thead>
+      <tbody>{% for row in rows %}
+      <tr><td>#{{ row.id }}</td><td><strong>{{ row.title }}</strong><small class="subtext">{{ row.priority }} • {{ row.estimated_hours or '-' }} цаг</small></td><td>{{ row.work_type }}</td><td>{{ row.branch or '-' }}</td><td>{{ row.customer_name or '-' }}</td><td><span class="badge status-{{ row.status }}">{{ row.status }}</span></td><td>{{ row.assignee or '-' }}</td><td>{{ row.deadline or '-' }}</td>
+        {% if session.role=='admin' %}<td><button class="icon-btn" onclick="openUpdate({{ row.id }}, {{ row.status|tojson }}, {{ (row.assignee or '')|tojson }}, {{ (row.deadline or '')|tojson }}, {{ (row.estimated_hours or '')|tojson }})">•••</button></td>{% endif %}
+      </tr>{% else %}<tr><td colspan="9" class="empty">Захиалга олдсонгүй</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+</div>
+
+<dialog id="orderModal" class="modal"><form method="post">
+  <div class="modal-head"><h2>Шинэ захиалга</h2><button type="button" onclick="this.closest('dialog').close()">×</button></div>
+  <div class="form-grid">
+    <label class="span-2">Захиалгын нэр<input name="title" required></label>
+    <label>Ажлын төрөл<select name="work_type" required>{% for t in work_types %}<option>{{ t }}</option>{% endfor %}</select></label>
+    <label>Чухал байдал<select name="priority"><option>Энгийн</option><option>Өндөр</option><option>Яаралтай</option></select></label>
+    {% if session.role=='admin' %}
+    <label>Захиалагч<select name="user_id"><option value="">Тодорхойгүй</option>{% for u in users %}<option value="{{ u.id }}">{{ u.name }} — {{ u.branch }}</option>{% endfor %}</select></label>
+    <label>Салбар<input name="branch" placeholder="Ж: Central Mall"></label>
+    <label>Хариуцагч<input name="assignee" placeholder="Ажлын хүн"></label>
+    <label>Төлөв<select name="status">{% for s in statuses %}<option>{{ s }}</option>{% endfor %}</select></label>
+    {% endif %}
+    <label>Deadline<input type="date" name="deadline"></label>
+    <label>Тооцоолсон цаг (цаг)<input type="number" name="estimated_hours" step="0.5" min="0"></label>
+    <label class="span-2">Дэлгэрэнгүй тайлбар<textarea name="description" rows="4"></textarea></label>
+  </div>
+  <div class="modal-foot"><button type="button" class="btn" onclick="this.closest('dialog').close()">Болих</button><button class="btn primary">Бүртгэх</button></div>
+</form></dialog>
+
+<dialog id="updateModal" class="modal"><form method="post" id="updateForm">
+  <div class="modal-head"><h2>Захиалгыг шинэчлэх</h2><button type="button" onclick="this.closest('dialog').close()">×</button></div>
+  <div class="form-grid">
+    <label>Төлөв<select name="status">{% for s in statuses %}<option>{{ s }}</option>{% endfor %}</select></label>
+    <label>Хариуцагч<input name="assignee"></label>
+    <label>Deadline<input type="date" name="deadline"></label>
+    <label>Цаг<input type="number" name="estimated_hours" step="0.5"></label>
+  </div>
+  <div class="modal-foot"><button type="button" class="btn" onclick="this.closest('dialog').close()">Болих</button><button class="btn primary">Хадгалах</button></div>
+</form></dialog>
+<script>
+function openUpdate(id,status,assignee,deadline,hours){
+  const f=document.getElementById('updateForm'); f.action='/orders/'+id+'/update';
+  f.status.value=status; f.assignee.value=assignee; f.deadline.value=deadline; f.estimated_hours.value=hours||'';
+  document.getElementById('updateModal').showModal();
+}
+</script>
+{% endblock %}

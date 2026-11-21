@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page">
+  <div class="page-head"><div><p class="eyebrow">Сарын төлөвлөгөө</p><h1>Excel импорт</h1></div></div>
+  <section class="panel upload-panel">
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+      <div class="upload-icon">▦</div>
+      <div><strong>Plan Excel файл сонгох</strong><p>.xlsx форматаар upload хийнэ. Бүх sheet, хүснэгтийн мөр SQLite-д нэмэгдэнэ.</p></div>
+      <input type="file" name="excel_file" accept=".xlsx,.xls" required>
+      <button class="btn primary">Импортлох</button>
+    </form>
+  </section>
+  <section class="panel"><div class="table-wrap"><table><thead><tr><th>№</th><th>Төлөвлөгөө</th><th>Sheet</th><th>Салбар</th><th>Хариуцагч</th><th>Deadline</th><th>Төсөв</th></tr></thead><tbody>
+  {% for r in rows %}<tr><td>#{{ r.id }}</td><td><strong>{{ r.title }}</strong></td><td>{{ r.sheet_name }}</td><td>{{ r.branch or '-' }}</td><td>{{ r.assignee or '-' }}</td><td>{{ r.deadline or '-' }}</td><td>{{ r.budget or '-' }}</td></tr>{% else %}<tr><td colspan="7" class="empty">Төлөвлөгөө хараахан импорт хийгдээгүй</td></tr>{% endfor %}
+  </tbody></table></div></section>
+</div>
+{% endblock %}

@@ -14,7 +14,7 @@ services:
         value: /var/data/marketing.db
       - key: UPLOAD_DIR
         value: /var/data/uploads
-    disks:
-      - name: marketing-data
-        mountPath: /var/data
-        sizeGB: 1
+    disk:
+  name: marketing-data
+  mountPath: /var/data
+  sizeGB: 1

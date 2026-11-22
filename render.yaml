@@ -1,3 +1,4 @@
+
 services:
   - type: web
     name: marketing-flow-ai
@@ -15,6 +16,6 @@ services:
       - key: UPLOAD_DIR
         value: /var/data/uploads
     disk:
-  name: marketing-data
-  mountPath: /var/data
-  sizeGB: 1
+      name: marketing-data
+      mountPath: /var/data
+      sizeGB: 1
